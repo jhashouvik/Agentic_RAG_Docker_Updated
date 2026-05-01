@@ -394,26 +394,36 @@ if st.session_state.loaded:
     # ── CHAT HISTORY ──────────────────────────────────────────
     if st.session_state.chat:
         st.markdown("---")
-        for msg in reversed(st.session_state.chat):
-            if msg["role"] == "user":
-                st.markdown(f'<div class="chat-q">🧑 <strong>You</strong><br>{msg["content"]}</div>', unsafe_allow_html=True)
-            elif msg["role"] == "compare":
+        # Group into (question, answer) pairs then reverse pairs so newest is on top,
+        # but within each pair question always renders before answer.
+        _pairs, _i = [], 0
+        while _i < len(st.session_state.chat):
+            _q = st.session_state.chat[_i]
+            _a = st.session_state.chat[_i + 1] if _i + 1 < len(st.session_state.chat) else None
+            _pairs.append((_q, _a))
+            _i += 2
+
+        for _q, _a in reversed(_pairs):
+            st.markdown(f'<div class="chat-q">🧑 <strong>You</strong><br>{_q["content"]}</div>', unsafe_allow_html=True)
+            if _a is None:
+                continue
+            if _a["role"] == "compare":
                 ca2, cb2 = st.columns(2)
                 with ca2:
-                    st.markdown(f'<div class="compare-a"><div style="color:#58a6ff;font-weight:600;font-size:.8rem">{msg["strategy_a"].upper()}</div>{msg["answer_a"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="compare-a"><div style="color:#58a6ff;font-weight:600;font-size:.8rem">{_a["strategy_a"].upper()}</div>{_a["answer_a"]}</div>', unsafe_allow_html=True)
                 with cb2:
-                    st.markdown(f'<div class="compare-b"><div style="color:#a78bfa;font-weight:600;font-size:.8rem">{msg["strategy_b"].upper()}</div>{msg["answer_b"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="compare-b"><div style="color:#a78bfa;font-weight:600;font-size:.8rem">{_a["strategy_b"].upper()}</div>{_a["answer_b"]}</div>', unsafe_allow_html=True)
             else:
-                pages_str  = ", ".join(f"p.{p}" for p in msg.get("pages", []))
-                chunks_str = ", ".join(f"#{c}" for c in msg.get("chunks", []))
-                g, r = msg.get("graded", "?"), msg.get("retrieved", "?")
+                pages_str  = ", ".join(f"p.{p}" for p in _a.get("pages", []))
+                chunks_str = ", ".join(f"#{c}" for c in _a.get("chunks", []))
+                g, r = _a.get("graded", "?"), _a.get("retrieved", "?")
                 st.markdown(
-                    f'<div class="chat-a">🤖 <strong>AI ({model})</strong><br>{msg["content"]}'
+                    f'<div class="chat-a">🤖 <strong>AI ({model})</strong><br>{_a["content"]}'
                     f'<div class="chat-meta">'
                     f'📖 Pages: <strong>{pages_str or "—"}</strong> &nbsp;|&nbsp; '
                     f'🧩 Chunks: {chunks_str or "—"} &nbsp;|&nbsp; '
                     f'✅ Graded: {g}/{r} &nbsp;|&nbsp; '
-                    f'🔤 ~{msg.get("tokens", 0):,} tokens'
+                    f'🔤 ~{_a.get("tokens", 0):,} tokens'
                     f'</div></div>',
                     unsafe_allow_html=True
                 )
