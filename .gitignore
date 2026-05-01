@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+data/faiss_store/
+data/memory.db
+data/uploads/
+*.pdf
+.streamlit/secrets.toml
+.vscode/
+.idea/
