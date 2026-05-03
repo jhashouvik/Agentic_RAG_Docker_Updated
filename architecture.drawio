@@ -1,0 +1,325 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ============================================================ -->
+    <!-- TITLE -->
+    <!-- ============================================================ -->
+    <mxCell id="title" value="Agentic RAG — End-to-End Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;fontColor=#1a237e;" vertex="1" parent="1">
+      <mxGeometry x="427" y="20" width="800" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- SWIM LANE BACKGROUNDS -->
+    <!-- ============================================================ -->
+
+    <!-- Lane: User Interface -->
+    <mxCell id="lane_ui_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#a5d6a7;opacity=50;" vertex="1" parent="1">
+      <mxGeometry x="20" y="80" width="1614" height="110" as="geometry" />
+    </mxCell>
+    <mxCell id="lane_ui_label" value="USER INTERFACE LAYER&#xa;(Streamlit)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#2e7d32;" vertex="1" parent="1">
+      <mxGeometry x="30" y="95" width="160" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane: Ingestion Pipeline -->
+    <mxCell id="lane_ingest_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#90caf9;opacity=50;" vertex="1" parent="1">
+      <mxGeometry x="20" y="210" width="1614" height="210" as="geometry" />
+    </mxCell>
+    <mxCell id="lane_ingest_label" value="INGESTION PIPELINE&#xa;(One-time per upload)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#1565c0;" vertex="1" parent="1">
+      <mxGeometry x="30" y="290" width="160" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane: Query Pipeline -->
+    <mxCell id="lane_query_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ffcc80;opacity=50;" vertex="1" parent="1">
+      <mxGeometry x="20" y="440" width="1614" height="260" as="geometry" />
+    </mxCell>
+    <mxCell id="lane_query_label" value="QUERY PIPELINE&#xa;(LangGraph DAG — per question)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#e65100;" vertex="1" parent="1">
+      <mxGeometry x="30" y="550" width="160" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane: Storage -->
+    <mxCell id="lane_storage_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#ce93d8;opacity=50;" vertex="1" parent="1">
+      <mxGeometry x="20" y="720" width="1614" height="140" as="geometry" />
+    </mxCell>
+    <mxCell id="lane_storage_label" value="STORAGE LAYER" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#6a1b9a;" vertex="1" parent="1">
+      <mxGeometry x="30" y="770" width="160" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane: External APIs -->
+    <mxCell id="lane_api_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#f48fb1;opacity=50;" vertex="1" parent="1">
+      <mxGeometry x="20" y="880" width="1614" height="140" as="geometry" />
+    </mxCell>
+    <mxCell id="lane_api_label" value="EXTERNAL SERVICES&#xa;(OpenAI API)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#880e4f;" vertex="1" parent="1">
+      <mxGeometry x="30" y="930" width="160" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- USER INTERFACE LAYER -->
+    <!-- ============================================================ -->
+
+    <!-- User (actor) -->
+    <mxCell id="user" value="User" style="shape=mxgraph.flowchart.start_2;fillColor=#1a237e;strokeColor=#1a237e;fontColor=#ffffff;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="80" y="105" width="50" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- PDF Upload widget -->
+    <mxCell id="upload_widget" value="&lt;b&gt;PDF Upload&lt;/b&gt;&#xa;st.file_uploader()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388e3c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="220" y="100" width="160" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- Sidebar config -->
+    <mxCell id="sidebar" value="&lt;b&gt;Sidebar Config&lt;/b&gt;&#xa;chunk_size / overlap&#xa;top_k / temperature&#xa;llm / embed_model&#xa;strategy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388e3c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="440" y="85" width="150" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- Chat input -->
+    <mxCell id="chat_input" value="&lt;b&gt;Question Input&lt;/b&gt;&#xa;st.chat_input()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388e3c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="660" y="100" width="150" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- Chat history display -->
+    <mxCell id="chat_display" value="&lt;b&gt;Chat History Display&lt;/b&gt;&#xa;User: blue border&#xa;AI: green border + metadata&#xa;(pages | chunks | tokens)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388e3c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="880" y="90" width="180" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- Compare mode -->
+    <mxCell id="compare_mode" value="&lt;b&gt;Comparison Mode&lt;/b&gt;&#xa;Side-by-side A vs B&#xa;strategy comparison" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388e3c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1130" y="95" width="160" height="65" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- INGESTION PIPELINE -->
+    <!-- ============================================================ -->
+
+    <!-- Agent 1: Ingestor -->
+    <mxCell id="agent_ingestor" value="&lt;b&gt;Agent 1: Ingestor&lt;/b&gt;&#xa;agent_ingestor.py&#xa;────────────────&#xa;PyPDFLoader&#xa;→ list[Document]&#xa;→ full_text&#xa;→ page_count" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbdefb;strokeColor=#1565c0;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="220" y="220" width="170" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- Agent 2: Chunker -->
+    <mxCell id="agent_chunker" value="&lt;b&gt;Agent 2: Chunker&lt;/b&gt;&#xa;agent_chunker.py&#xa;────────────────&#xa;[recursive] RecursiveCharText&#xa;[token]    TokenTextSplitter&#xa;[character] CharTextSplitter&#xa;[semantic] SemanticChunker&#xa;→ list[Document+metadata]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbdefb;strokeColor=#1565c0;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="450" y="215" width="200" height="125" as="geometry" />
+    </mxCell>
+
+    <!-- Agent 3: Vectorstore -->
+    <mxCell id="agent_vectorstore" value="&lt;b&gt;Agent 3: Vectorstore&lt;/b&gt;&#xa;agent_vectorstore.py&#xa;────────────────────&#xa;OpenAIEmbeddings&#xa;→ 1536-dim vectors&#xa;FAISS.from_documents()&#xa;→ FAISS Index (in-memory)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbdefb;strokeColor=#1565c0;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="710" y="215" width="195" height="125" as="geometry" />
+    </mxCell>
+
+    <!-- Agent 4: Memory Init -->
+    <mxCell id="agent_memory_init" value="&lt;b&gt;Agent 4: Memory Init&lt;/b&gt;&#xa;agent_memory.py&#xa;────────────────&#xa;SQLite connect()&#xa;CREATE TABLE sessions&#xa;CREATE TABLE memory&#xa;CREATE TABLE comparisons&#xa;→ AgentMemory instance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbdefb;strokeColor=#1565c0;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="965" y="215" width="195" height="125" as="geometry" />
+    </mxCell>
+
+    <!-- Summary generation -->
+    <mxCell id="summary_gen" value="&lt;b&gt;Auto Summary&lt;/b&gt;&#xa;Orchestrator&#xa;──────────────&#xa;full_text[:12000]&#xa;→ GPT-4o (temp=0.2)&#xa;→ Markdown summary&#xa;  (Overview, Topics,&#xa;   Findings, Data)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbdefb;strokeColor=#1565c0;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1220" y="215" width="185" height="125" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- QUERY PIPELINE — LANGGRAPH DAG -->
+    <!-- ============================================================ -->
+
+    <!-- AgentState box -->
+    <mxCell id="agent_state" value="&lt;b&gt;AgentState (TypedDict)&lt;/b&gt;&#xa;question: str&#xa;vectorstore: FAISS&#xa;retrieved_docs: list&#xa;graded_docs: list&#xa;answer: str&#xa;chat_history: str&#xa;tokens_used: int" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe0b2;strokeColor=#e65100;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="220" y="455" width="185" height="130" as="geometry" />
+    </mxCell>
+
+    <!-- Node 1: RETRIEVE -->
+    <mxCell id="node_retrieve" value="&lt;b&gt;Node 1: RETRIEVE&lt;/b&gt;&#xa;agent_orchestrator.py&#xa;─────────────────────&#xa;1. Embed question&#xa;   (same model as chunks)&#xa;2. FAISS cosine similarity&#xa;3. Return top-K chunks&#xa;   with scores (0–1)&#xa;─────────────────────&#xa;Output: retrieved_docs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f57f17;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="470" y="450" width="200" height="165" as="geometry" />
+    </mxCell>
+
+    <!-- Node 2: GRADE -->
+    <mxCell id="node_grade" value="&lt;b&gt;Node 2: GRADE&lt;/b&gt;&#xa;agent_orchestrator.py&#xa;─────────────────────&#xa;For each chunk → GPT-4o-mini:&#xa;  &quot;RELEVANT or IRRELEVANT?&quot;&#xa;Filter irrelevant chunks&#xa;Fallback: use all if 100%&#xa;filtered (avoids empty ans)&#xa;─────────────────────&#xa;Output: graded_docs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f57f17;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="730" y="450" width="210" height="165" as="geometry" />
+    </mxCell>
+
+    <!-- Node 3: GENERATE -->
+    <mxCell id="node_generate" value="&lt;b&gt;Node 3: GENERATE&lt;/b&gt;&#xa;agent_orchestrator.py&#xa;──────────────────────&#xa;1. Format context block:&#xa;   [Page|Chunk|Score]&#xa;   {chunk text} ---&#xa;2. Inject last-5 turns&#xa;   from AgentMemory window&#xa;3. Call GPT-4o (temp=0.2)&#xa;   with RAG_PROMPT&#xa;──────────────────────&#xa;Output: answer, tokens_used" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f57f17;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1000" y="445" width="210" height="175" as="geometry" />
+    </mxCell>
+
+    <!-- Memory write back -->
+    <mxCell id="memory_write" value="&lt;b&gt;Memory Persistence&lt;/b&gt;&#xa;agent_memory.py&#xa;────────────────&#xa;memory.add_turn(q, a)&#xa;INSERT INTO memory&#xa;(session_id, role,&#xa; content, pages,&#xa; chunks, tokens)&#xa;Update window buffer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f57f17;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1270" y="455" width="185" height="155" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- STORAGE LAYER -->
+    <!-- ============================================================ -->
+
+    <!-- FAISS store -->
+    <mxCell id="faiss_store" value="&lt;b&gt;FAISS Vector Index&lt;/b&gt;&#xa;/data/faiss_store/{session_id}&#xa;─────────────────────────────&#xa;• In-memory during session&#xa;• 1536-dim float32 vectors&#xa;• Cosine similarity search&#xa;• Persisted to disk on save" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7b1fa2;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="450" y="735" width="220" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- SQLite Memory DB -->
+    <mxCell id="sqlite_db" value="&lt;b&gt;SQLite: memory.db&lt;/b&gt;&#xa;/data/memory.db&#xa;─────────────────────&#xa;TABLE sessions&#xa;  session_id, doc_name,&#xa;  strategy, embed_model&#xa;TABLE memory&#xa;  role, content, pages,&#xa;  chunks, tokens, timestamp&#xa;TABLE comparisons&#xa;  strategy_a/b, answer_a/b" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7b1fa2;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="750" y="730" width="220" height="130" as="geometry" />
+    </mxCell>
+
+    <!-- In-memory window -->
+    <mxCell id="memory_window" value="&lt;b&gt;Conversation Window&lt;/b&gt;&#xa;(In-memory)&#xa;──────────────────────&#xa;ChatMessageHistory&#xa;Last K=5 Q&amp;A turns&#xa;Injected into LLM prompt&#xa;Enables follow-up Qs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7b1fa2;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1040" y="735" width="200" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- Session state -->
+    <mxCell id="session_state" value="&lt;b&gt;Streamlit Session State&lt;/b&gt;&#xa;st.session_state&#xa;──────────────────────────&#xa;chat: list[dict]&#xa;total_tokens: int&#xa;vectorstore: FAISS ref&#xa;memory: AgentMemory ref&#xa;session_id: str (uuid4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7b1fa2;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1310" y="730" width="210" height="115" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- EXTERNAL SERVICES -->
+    <!-- ============================================================ -->
+
+    <!-- Embeddings API -->
+    <mxCell id="openai_embed" value="&lt;b&gt;OpenAI Embeddings API&lt;/b&gt;&#xa;text-embedding-3-small (default)&#xa;text-embedding-3-large&#xa;text-embedding-ada-002&#xa;─────────────────────────────&#xa;Called during: Ingest + per Query&#xa;Output: 1536-dim float vectors" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="350" y="895" width="250" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- GPT-4o-mini for grading -->
+    <mxCell id="openai_mini" value="&lt;b&gt;OpenAI Chat API — GPT-4o-mini&lt;/b&gt;&#xa;Used by: GRADE node&#xa;──────────────────────────────&#xa;Prompt: &quot;RELEVANT or IRRELEVANT?&quot;&#xa;One call per retrieved chunk&#xa;Low cost: ~$0.00002/question&#xa;Temperature: 0 (deterministic)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="680" y="895" width="260" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- GPT-4o for generation -->
+    <mxCell id="openai_gpt4o" value="&lt;b&gt;OpenAI Chat API — GPT-4o&lt;/b&gt;&#xa;Used by: GENERATE + Summary&#xa;──────────────────────────────&#xa;RAG_PROMPT: Answer from context only&#xa;Injects: context + chat history&#xa;Cost: ~$0.02/question&#xa;Temperature: 0.2 (slight creativity)&#xa;Alt: gpt-4o-mini (~$0.002/q)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="890" width="265" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- Docker container boundary -->
+    <mxCell id="docker_label" value="Docker Container (port 8501) — Volume mount: ./data:/data" style="text;html=1;strokeColor=#546e7a;fillColor=#eceff1;align=center;verticalAlign=middle;rounded=1;fontSize=10;fontStyle=2;fontColor=#37474f;" vertex="1" parent="1">
+      <mxGeometry x="20" y="1040" width="1614" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- EDGES — INGESTION FLOW -->
+    <!-- ============================================================ -->
+
+    <mxCell id="e_user_upload" value="PDF file" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#388e3c;fontSize=9;" edge="1" source="user" target="upload_widget" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_upload_ingestor" value="file path" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#1565c0;fontSize=9;" edge="1" source="upload_widget" target="agent_ingestor" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_ingestor_chunker" value="list[Document]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#1565c0;fontSize=9;" edge="1" source="agent_ingestor" target="agent_chunker" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_chunker_vectorstore" value="list[Document]&#xa;+ metadata" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#1565c0;fontSize=9;" edge="1" source="agent_chunker" target="agent_vectorstore" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_vectorstore_memory" value="chunk count&#xa;session info" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#1565c0;fontSize=9;" edge="1" source="agent_vectorstore" target="agent_memory_init" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_memory_summary" value="full_text&#xa;(12k chars)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#1565c0;fontSize=9;" edge="1" source="agent_memory_init" target="summary_gen" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- EDGES — QUERY FLOW -->
+    <!-- ============================================================ -->
+
+    <mxCell id="e_chat_state" value="question + config" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#e65100;fontSize=9;" edge="1" source="chat_input" target="agent_state" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_state_retrieve" value="AgentState{}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#e65100;fontSize=9;" edge="1" source="agent_state" target="node_retrieve" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_retrieve_grade" value="retrieved_docs&#xa;(top-K scored)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#e65100;fontSize=9;" edge="1" source="node_retrieve" target="node_grade" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_grade_generate" value="graded_docs&#xa;(filtered)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#e65100;fontSize=9;" edge="1" source="node_grade" target="node_generate" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_generate_memwrite" value="answer + tokens" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#e65100;fontSize=9;" edge="1" source="node_generate" target="memory_write" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_memwrite_display" value="answer + metadata" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#388e3c;fontSize=9;" edge="1" source="memory_write" target="chat_display" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- EDGES — STORAGE CONNECTIONS -->
+    <!-- ============================================================ -->
+
+    <mxCell id="e_vectorstore_faiss" value="save index" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#7b1fa2;fontSize=9;" edge="1" source="agent_vectorstore" target="faiss_store" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_retrieve_faiss" value="search()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#7b1fa2;fontSize=9;" edge="1" source="node_retrieve" target="faiss_store" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_memwrite_sqlite" value="INSERT turn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#7b1fa2;fontSize=9;" edge="1" source="memory_write" target="sqlite_db" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_generate_window" value="read last 5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#7b1fa2;fontSize=9;" edge="1" source="node_generate" target="memory_window" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_memwrite_window" value="append turn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#7b1fa2;fontSize=9;" edge="1" source="memory_write" target="memory_window" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- EDGES — OPENAI API CALLS -->
+    <!-- ============================================================ -->
+
+    <mxCell id="e_vectorstore_embed" value="embed chunks&#xa;(ingest)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#c62828;fontSize=9;" edge="1" source="agent_vectorstore" target="openai_embed" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_retrieve_embed" value="embed question&#xa;(per query)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#c62828;fontSize=9;" edge="1" source="node_retrieve" target="openai_embed" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_grade_mini" value="grade each chunk" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#c62828;fontSize=9;" edge="1" source="node_grade" target="openai_mini" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_generate_gpt4o" value="RAG generation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#c62828;fontSize=9;" edge="1" source="node_generate" target="openai_gpt4o" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_summary_gpt4o" value="summarize doc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#c62828;fontSize=9;" edge="1" source="summary_gen" target="openai_gpt4o" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ============================================================ -->
+    <!-- LEGEND -->
+    <!-- ============================================================ -->
+
+    <mxCell id="legend_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;" vertex="1" parent="1">
+      <mxGeometry x="20" y="1080" width="400" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="legend_title" value="LEGEND" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="30" y="1085" width="80" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg1" value="" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#388e3c;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="30" y="1113"/><mxPoint x="90" y="1113"/></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="leg1_label" value="Data flow (solid)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="95" y="1105" width="120" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg2" value="" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#7b1fa2;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="30" y="1135"/><mxPoint x="90" y="1135"/></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="leg2_label" value="Storage / API call (dashed)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="95" y="1127" width="160" height="20" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>

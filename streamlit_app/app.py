@@ -223,6 +223,10 @@ if uploaded and (not st.session_state.loaded or uploaded.name != st.session_stat
         prog.progress(85, "📋 Summarizing document…")
         summary = summarize_document(doc_data["full_text"], model=model)
 
+        # Clear stale state from any previously loaded document
+        if st.session_state.get("memory"):
+            st.session_state.memory.clear()
+
         # Memory
         memory = AgentMemory(session_id=st.session_state.sid, window_k=5,
                              db_path=DATA_DIR / "memory.db")
@@ -232,16 +236,17 @@ if uploaded and (not st.session_state.loaded or uploaded.name != st.session_stat
             "page_count": doc_data["page_count"],
         }, DATA_DIR / "memory.db")
 
-        # Store
+        # Store — reset chat and strategy indexes so no cross-doc contamination
         st.session_state.update({
             "vs": vs, "graph": graph, "memory": memory,
             "loaded": True, "doc_name": uploaded.name,
             "strategy": strategy, "summary": summary,
             "chunks": len(chunks), "chars": doc_data["char_count"],
             "pages": doc_data["page_count"],
-            "documents": doc_data["documents"],  # kept for on-demand strategy-B index
+            "documents": doc_data["documents"],
+            "chat": [],
+            "vs_by_strategy": {strategy: (vs, len(chunks))},
         })
-        st.session_state.vs_by_strategy[strategy] = (vs, len(chunks))
 
         prog.progress(100, "✅ Done!")
         st.success(f"✅ **{uploaded.name}** — {doc_data['page_count']} pages · {len(chunks)} chunks · [{strategy}] strategy")
