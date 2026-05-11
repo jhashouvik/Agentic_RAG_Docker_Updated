@@ -18,6 +18,10 @@ faiss-cpu>=1.8.0
 # ── PDF loading ───────────────────────────────────────────────
 pypdf>=4.2.0
 
+# ── OCR fallback (for scanned / mobile-captured PDFs) ─────────
+pytesseract>=0.3.10
+pdf2image>=1.17.0
+
 # ── Tokenizer (for TokenTextSplitter) ────────────────────────
 tiktoken>=0.7.0
 
