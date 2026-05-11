@@ -25,7 +25,7 @@ def _ocr_pdf(pdf_path: str) -> list[Document]:
         ) from e
 
     logger.info("[Ingestor] Falling back to OCR (Tesseract) for image-based PDF…")
-    images = convert_from_path(pdf_path, dpi=300)
+    images = convert_from_path(pdf_path, dpi=150)
     pages = []
     for i, img in enumerate(images):
         text = pytesseract.image_to_string(img, lang="eng").strip()
