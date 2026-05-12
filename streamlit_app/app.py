@@ -8,6 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
+import streamlit.components.v1 as _components
 from agents.agent_ingestor      import load_pdf
 from agents.agent_chunker       import chunk_documents, get_strategy_description, ChunkStrategy
 from agents.agent_vectorstore   import build_faiss_index, similarity_search_with_scores
@@ -23,7 +24,7 @@ init_db(DATA_DIR / "memory.db")
 st.set_page_config(
     page_title="PDF Q&A · LangGraph Agents",
     page_icon="🧠", layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 def _inject_css():
@@ -46,30 +47,81 @@ def _inject_css():
         cb_bg, cb_bd     = "#fbefff", "#d2a8ff"
 
     st.markdown(f"""<style>
+/* ── Base ── */
 [data-testid="stAppViewContainer"]{{background:{bg}}}
 [data-testid="stSidebar"]{{background:{sb_bg};border-right:1px solid {sb_bd}}}
 .block-container{{padding:1.5rem 2rem 2rem}}
 h1,h2,h3{{color:{h}}}
 p,li,label{{color:{p}}}
-.hero{{font-size:1.9rem;font-weight:800;color:{h};margin-bottom:.2rem;padding-top:2.5rem;line-height:1.3}}
+
+/* ── Hero ── */
+.hero{{font-size:1.9rem;font-weight:800;color:{h};margin-bottom:.2rem;padding-top:1.5rem;line-height:1.3}}
 .hero-sub{{color:{sub};font-size:.92rem;margin-bottom:1rem}}
+
+/* ── Pills ── */
 .pill{{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.7rem;font-weight:600;margin:2px}}
 .pill-blue  {{background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3)}}
 .pill-green {{background:rgba(63,185,80,.15); color:#3fb950;border:1px solid rgba(63,185,80,.3)}}
 .pill-amber {{background:rgba(255,166,0,.15); color:#e3b341;border:1px solid rgba(255,166,0,.3)}}
 .pill-purple{{background:rgba(139,99,255,.15);color:#a78bfa;border:1px solid rgba(139,99,255,.3)}}
 .pill-red   {{background:rgba(248,81,73,.15); color:#f85149;border:1px solid rgba(248,81,73,.3)}}
+
+/* ── Stat boxes ── */
 .sbox{{background:{card};border:1px solid {bd};border-radius:10px;padding:1rem;text-align:center;margin-bottom:.5rem}}
 .sval{{font-size:1.55rem;font-weight:700;color:#58a6ff}}
 .slbl{{font-size:.72rem;color:{sub};margin-top:2px}}
-.chat-q{{background:{chat_q};border-left:3px solid #58a6ff;border-radius:0 10px 10px 10px;padding:.75rem 1rem;margin:.5rem 0;color:{h};font-size:.9rem}}
-.chat-a{{background:{chat_a};border-left:3px solid #3fb950;border-radius:0 10px 10px 10px;padding:.75rem 1rem;margin:.25rem 0;color:{h};font-size:.9rem}}
-.chat-meta{{font-size:.68rem;color:{sub};border-top:1px solid {bd};padding-top:.35rem;margin-top:.5rem}}
+
+/* ── Chat bubbles ── */
+.chat-q{{background:{chat_q};border-left:3px solid #58a6ff;border-radius:0 10px 10px 10px;padding:.75rem 1rem;margin:.5rem 0;color:{h};font-size:.9rem;word-break:break-word}}
+.chat-a{{background:{chat_a};border-left:3px solid #3fb950;border-radius:0 10px 10px 10px;padding:.75rem 1rem;margin:.25rem 0;color:{h};font-size:.9rem;word-break:break-word}}
+.chat-meta{{font-size:.68rem;color:{sub};border-top:1px solid {bd};padding-top:.35rem;margin-top:.5rem;flex-wrap:wrap;display:flex;gap:.4rem}}
+
+/* ── Misc ── */
 .chunk-box{{background:{card};border:1px solid {bd};border-radius:8px;padding:.6rem .9rem;margin:.25rem 0;font-size:.8rem;color:{p}}}
 .node-active{{color:#3fb950;font-weight:600}}
 .compare-a{{background:{ca_bg};border:1px solid {ca_bd};border-radius:10px;padding:1rem}}
 .compare-b{{background:{cb_bg};border:1px solid {cb_bd};border-radius:10px;padding:1rem}}
 div[data-testid="stFileUploader"]{{border:1.5px dashed {file_bd};border-radius:10px;background:{file_bg};padding:.5rem}}
+
+/* ── Sidebar touch-friendly ── */
+[data-testid="stSidebar"] .stSelectbox,
+[data-testid="stSidebar"] .stSlider {{margin-bottom:.75rem}}
+[data-testid="stSidebarNav"] {{display:none}}
+
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {{
+    .block-container{{padding:.75rem 1rem 5rem}}
+    .hero{{font-size:1.35rem;padding-top:.75rem}}
+    .hero-sub{{font-size:.8rem}}
+    .pill{{font-size:.62rem;padding:2px 7px}}
+    .sval{{font-size:1.1rem}}
+    .slbl{{font-size:.65rem}}
+    .sbox{{padding:.6rem .4rem}}
+    .chat-q,.chat-a{{font-size:.85rem;padding:.6rem .75rem}}
+    .chat-meta{{font-size:.62rem}}
+    /* Stack stat columns vertically */
+    [data-testid="stHorizontalBlock"] > div{{min-width:45% !important}}
+    /* Bigger touch targets for buttons */
+    .stButton > button{{
+        min-height:48px;
+        font-size:1rem;
+        border-radius:10px;
+        width:100%
+    }}
+    /* Full-width file uploader */
+    div[data-testid="stFileUploader"]{{padding:.75rem}}
+    /* Bigger chat input */
+    [data-testid="stChatInput"] textarea{{font-size:1rem;min-height:52px}}
+    /* Hide expanders that clutter mobile */
+    .streamlit-expanderHeader{{font-size:.85rem}}
+}}
+
+/* ── Small mobile (≤480px) ── */
+@media (max-width: 480px) {{
+    .hero{{font-size:1.1rem}}
+    [data-testid="stHorizontalBlock"] > div{{min-width:100% !important}}
+    .compare-a,.compare-b{{padding:.6rem}}
+}}
 </style>""", unsafe_allow_html=True)
 
 # ── Session init ──────────────────────────────────────────────
@@ -86,6 +138,19 @@ def _init():
     }.items():
         if k not in st.session_state: st.session_state[k] = v
 _init()
+
+# Force sidebar collapsed on first visit — overrides browser localStorage
+if not st.session_state.get("_sb_init"):
+    st.session_state["_sb_init"] = True
+    _components.html("""
+        <script>
+            setTimeout(function() {
+                var btn = window.parent.document.querySelector('[data-testid="collapsedControl"]');
+                if (btn) btn.click();
+            }, 150);
+        </script>
+    """, height=0)
+
 _inject_css()
 
 # ── SIDEBAR ───────────────────────────────────────────────────
