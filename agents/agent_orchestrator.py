@@ -20,7 +20,6 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
-from langchain_community.vectorstores import FAISS
 from langgraph.graph import StateGraph, END
 
 logger = logging.getLogger("agent_orchestrator")
@@ -46,7 +45,7 @@ class AgentState(TypedDict):
 # Node 1 — Retrieve
 # ─────────────────────────────────────────────────────────────
 
-def node_retrieve(state: AgentState, vectorstore: FAISS) -> AgentState:
+def node_retrieve(state: AgentState, vectorstore) -> AgentState:
     """Embed the question and pull top-K chunks from FAISS."""
     from agents.agent_vectorstore import similarity_search_with_scores
     question = state["question"]
@@ -159,7 +158,7 @@ def node_generate(state: AgentState) -> AgentState:
 # Graph builder
 # ─────────────────────────────────────────────────────────────
 
-def build_qa_graph(vectorstore: FAISS):
+def build_qa_graph(vectorstore):
     """
     Build the LangGraph agent graph.
     Returns a compiled graph you can invoke with an AgentState dict.
