@@ -26,6 +26,7 @@ COPY --from=builder /root/.local /root/.local
 COPY agents/          ./agents/
 COPY streamlit_app/   ./streamlit_app/
 COPY requirements.txt .
+RUN mkdir -p /app/default_pdf
 COPY default_pdf/     /app/default_pdf/
 
 # Data dirs — volume mount points

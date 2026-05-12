@@ -8,6 +8,7 @@ data/faiss_store/
 data/memory.db
 data/uploads/
 *.pdf
+!default_pdf/*.pdf
 .streamlit/secrets.toml
 .vscode/
 .idea/
