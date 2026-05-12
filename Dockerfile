@@ -26,7 +26,7 @@ COPY --from=builder /root/.local /root/.local
 COPY agents/          ./agents/
 COPY streamlit_app/   ./streamlit_app/
 COPY requirements.txt .
-COPY default_pdf/     /data/default_pdf/
+COPY default_pdf/     /app/default_pdf/
 
 # Data dirs — volume mount points
 RUN mkdir -p /data/faiss_store /data/uploads

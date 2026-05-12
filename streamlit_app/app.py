@@ -13,6 +13,7 @@ from agents.agent_chunker       import chunk_documents, get_strategy_description
 from agents.agent_vectorstore   import build_faiss_index, similarity_search_with_scores
 from agents.agent_memory        import AgentMemory, init_db, upsert_session, get_session_stats, save_comparison, load_comparisons
 from agents.agent_orchestrator  import build_qa_graph, summarize_document, AgentState
+from agents.pii_guard           import mask_pii, check_prompt_injection
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 DATA_DIR = Path(os.getenv("DATA_DIR", "/data"))
@@ -175,7 +176,7 @@ with st.expander("🔀 LangGraph Agent Flow", expanded=False):
             </div>""", unsafe_allow_html=True)
 
 # ── AUTO-LOAD DEFAULT PDF (once per session) ──────────────────
-_default_dir = DATA_DIR / "default_pdf"
+_default_dir = Path(__file__).parent.parent / "default_pdf"
 _default_pdfs = sorted(_default_dir.glob("*.pdf")) if _default_dir.exists() else []
 
 if _default_pdfs and not st.session_state.loaded:
@@ -183,7 +184,13 @@ if _default_pdfs and not st.session_state.loaded:
     _prog = st.progress(0, f"Loading default document: {_dpdf.name}…")
     try:
         _prog.progress(15, "📄 Agent 1: Loading default PDF…")
-        _doc_data = load_pdf(str(_dpdf))
+        # Copy to a temp path with no spaces — PyPDFLoader misreads spaced filenames as URLs
+        import shutil, tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as _tmp:
+            shutil.copy2(str(_dpdf), _tmp.name)
+            _tmp_path = _tmp.name
+        _doc_data = load_pdf(_tmp_path)
+        os.unlink(_tmp_path)
 
         _prog.progress(35, "✂️ Agent 2: Chunking with [semantic] strategy…")
         _chunks = chunk_documents(
@@ -329,7 +336,7 @@ if st.session_state.loaded:
 
     # Summary
     with st.expander("📋 AI Document Summary", expanded=True):
-        st.markdown(st.session_state.summary)
+        st.markdown(mask_pii(st.session_state.summary))
 
     # Chunking comparison info
     with st.expander("📐 Chunking Strategy Comparison", expanded=False):
@@ -360,6 +367,11 @@ if st.session_state.loaded:
     question = st.chat_input("Ask anything about the PDF…")
 
     if question:
+        _injected, _reason = check_prompt_injection(question)
+        if _injected:
+            st.error(f"🚫 Input blocked — potential prompt injection detected. {_reason}")
+            st.stop()
+
         if compare_mode and strategy_b not in st.session_state.vs_by_strategy:
             if st.session_state.get("documents"):
                 with st.spinner(f"🔢 Building Strategy B index [{strategy_b}] on-the-fly…"):
@@ -473,15 +485,15 @@ if st.session_state.loaded:
             if _a["role"] == "compare":
                 ca2, cb2 = st.columns(2)
                 with ca2:
-                    st.markdown(f'<div class="compare-a"><div style="color:#58a6ff;font-weight:600;font-size:.8rem">{_a["strategy_a"].upper()}</div>{_a["answer_a"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="compare-a"><div style="color:#58a6ff;font-weight:600;font-size:.8rem">{_a["strategy_a"].upper()}</div>{mask_pii(_a["answer_a"])}</div>', unsafe_allow_html=True)
                 with cb2:
-                    st.markdown(f'<div class="compare-b"><div style="color:#a78bfa;font-weight:600;font-size:.8rem">{_a["strategy_b"].upper()}</div>{_a["answer_b"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="compare-b"><div style="color:#a78bfa;font-weight:600;font-size:.8rem">{_a["strategy_b"].upper()}</div>{mask_pii(_a["answer_b"])}</div>', unsafe_allow_html=True)
             else:
                 pages_str  = ", ".join(f"p.{p}" for p in _a.get("pages", []))
                 chunks_str = ", ".join(f"#{c}" for c in _a.get("chunks", []))
                 g, r = _a.get("graded", "?"), _a.get("retrieved", "?")
                 st.markdown(
-                    f'<div class="chat-a">🤖 <strong>AI ({model})</strong><br>{_a["content"]}'
+                    f'<div class="chat-a">🤖 <strong>AI ({model})</strong><br>{mask_pii(_a["content"])}'
                     f'<div class="chat-meta">'
                     f'📖 Pages: <strong>{pages_str or "—"}</strong> &nbsp;|&nbsp; '
                     f'🧩 Chunks: {chunks_str or "—"} &nbsp;|&nbsp; '
