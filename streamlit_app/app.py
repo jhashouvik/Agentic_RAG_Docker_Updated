@@ -81,6 +81,7 @@ def _init():
         "vs_by_strategy": {},   # strategy → vectorstore
         "documents": None,      # raw LangChain docs for on-demand strategy-B index
         "dark_mode": True,
+        "is_default": False,    # True when the auto-loaded default PDF is active
     }.items():
         if k not in st.session_state: st.session_state[k] = v
 _init()
@@ -173,9 +174,65 @@ with st.expander("🔀 LangGraph Agent Flow", expanded=False):
               <div style="font-size:.72rem;color:#8b949e">{desc}</div>
             </div>""", unsafe_allow_html=True)
 
+# ── AUTO-LOAD DEFAULT PDF (once per session) ──────────────────
+_default_dir = DATA_DIR / "default_pdf"
+_default_pdfs = sorted(_default_dir.glob("*.pdf")) if _default_dir.exists() else []
+
+if _default_pdfs and not st.session_state.loaded:
+    _dpdf = _default_pdfs[0]
+    _prog = st.progress(0, f"Loading default document: {_dpdf.name}…")
+    try:
+        _prog.progress(15, "📄 Agent 1: Loading default PDF…")
+        _doc_data = load_pdf(str(_dpdf))
+
+        _prog.progress(35, "✂️ Agent 2: Chunking with [semantic] strategy…")
+        _chunks = chunk_documents(
+            _doc_data["documents"], strategy="semantic",
+            chunk_size=chunk_size, overlap=overlap, embed_model=embed_model
+        )
+
+        _prog.progress(60, f"🔢 Agent 3: Embedding {len(_chunks)} chunks → FAISS…")
+        _vs = build_faiss_index(_chunks, embed_model=embed_model, session_id=st.session_state.sid)
+
+        _prog.progress(80, "🔀 Agent 4: Building LangGraph graph…")
+        _graph = build_qa_graph(_vs)
+
+        _prog.progress(90, "📋 Summarizing document…")
+        _summary = summarize_document(_doc_data["full_text"], model=model)
+
+        _memory = AgentMemory(session_id=st.session_state.sid, window_k=5,
+                              db_path=DATA_DIR / "memory.db")
+        upsert_session(st.session_state.sid, {
+            "doc_name": _dpdf.name, "strategy": "semantic",
+            "embed_model": embed_model, "chunk_count": len(_chunks),
+            "page_count": _doc_data["page_count"],
+        }, DATA_DIR / "memory.db")
+
+        st.session_state.update({
+            "vs": _vs, "graph": _graph, "memory": _memory,
+            "loaded": True, "doc_name": _dpdf.name,
+            "strategy": "semantic", "summary": _summary,
+            "chunks": len(_chunks), "chars": _doc_data["char_count"],
+            "pages": _doc_data["page_count"],
+            "documents": _doc_data["documents"],
+            "chat": [],
+            "is_default": True,
+            "vs_by_strategy": {"semantic": (_vs, len(_chunks))},
+        })
+        _prog.progress(100, "✅ Default document ready!")
+        _prog.empty()
+        st.rerun()
+    except Exception as _e:
+        _prog.empty()
+        st.warning(f"⚠️ Could not auto-load default PDF: {_e}")
+
 # ── UPLOAD ────────────────────────────────────────────────────
 st.divider()
-st.markdown("### 📤 Step 1 — Upload PDF")
+if st.session_state.get("is_default"):
+    st.markdown("### 📤 Step 1 — Default PDF Active · Upload a Different PDF (Optional)")
+    st.info(f"📄 Default document **{st.session_state.doc_name}** is loaded and ready. Upload a different PDF below to override it for this session.")
+else:
+    st.markdown("### 📤 Step 1 — Upload PDF")
 
 uploaded = st.file_uploader("Drop PDF here", type=["pdf"], label_visibility="collapsed")
 
@@ -245,6 +302,7 @@ if uploaded and (not st.session_state.loaded or uploaded.name != st.session_stat
             "pages": doc_data["page_count"],
             "documents": doc_data["documents"],
             "chat": [],
+            "is_default": False,
             "vs_by_strategy": {strategy: (vs, len(chunks))},
         })
 
